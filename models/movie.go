@@ -3,6 +3,7 @@ package models
 type Movie struct {
 	ID        int     `gorm:"column:id_movies;primaryKey" json:"id"`
 	Title     string  `json:"title"`
+	Genre     string  `json:"genre"`
 	Year      int     `json:"year"`
 	Rating    float32 `json:"rating"`
 	Synopsis  string  `json:"synopsis"`
