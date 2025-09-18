@@ -1,8 +1,9 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
 	"watchwise_be/controllers"
+
+	"github.com/gin-gonic/gin"
 )
 
 func SetupRouter() *gin.Engine {
@@ -18,6 +19,9 @@ func SetupRouter() *gin.Engine {
 	// Reviews
 	r.GET("/movies/:id/reviews", controllers.GetReviewsByMovie)
 	r.POST("/movies/:id/reviews", controllers.CreateReview)
+
+	// Stats
+	r.GET("/stats", controllers.GetStats)
 
 	return r
 }
