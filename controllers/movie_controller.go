@@ -5,7 +5,8 @@ import (
 	"strconv"
 	"watchwise_be/config"
 	"watchwise_be/models"
-
+	"io"
+	"encoding/base64"
 	"github.com/gin-gonic/gin"
 )
 
@@ -26,12 +27,40 @@ func GetMovie(c *gin.Context) {
 }
 
 func CreateMovie(c *gin.Context) {
-	var movie models.Movie
-	if err := c.ShouldBindJSON(&movie); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	title := c.PostForm("title")
+	genre := c.PostForm("genre")
+	year, _ := strconv.Atoi(c.PostForm("year"))
+	rating, _ := strconv.ParseFloat(c.PostForm("rating"), 32)
+	synopsis := c.PostForm("synopsis")
+
+	file, err := c.FormFile("poster")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Poster file is required"})
 		return
 	}
-	config.DB.Create(&movie)
+
+	
+	opened, _ := file.Open()
+	defer opened.Close()
+	fileBytes, _ := io.ReadAll(opened)
+
+	posterBase64 := "data:image/jpeg;base64," + base64.StdEncoding.EncodeToString(fileBytes)
+
+	movie := models.Movie{
+		Title:     title,
+		Genre:     genre,
+		Year:      year,
+		Rating:    float32(rating),
+		Synopsis:  synopsis,
+		Poster:    posterBase64,
+		ViewCount: 0,
+	}
+
+	if err := config.DB.Create(&movie).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusCreated, movie)
 }
 
@@ -43,13 +72,39 @@ func UpdateMovie(c *gin.Context) {
 		return
 	}
 
-	if err := c.ShouldBindJSON(&movie); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	
+	if title := c.PostForm("title"); title != "" {
+		movie.Title = title
+	}
+	if genre := c.PostForm("genre"); genre != "" {
+		movie.Genre = genre
+	}
+	if yearStr := c.PostForm("year"); yearStr != "" {
+		year, _ := strconv.Atoi(yearStr)
+		movie.Year = year
+	}
+	if ratingStr := c.PostForm("rating"); ratingStr != "" {
+		rating, _ := strconv.ParseFloat(ratingStr, 32)
+		movie.Rating = float32(rating)
+	}
+	if synopsis := c.PostForm("synopsis"); synopsis != "" {
+		movie.Synopsis = synopsis
+	}
+
+
+	if file, err := c.FormFile("poster"); err == nil {
+		opened, _ := file.Open()
+		defer opened.Close()
+		fileBytes, _ := io.ReadAll(opened)
+		posterBase64 := "data:image/jpeg;base64," + base64.StdEncoding.EncodeToString(fileBytes)
+		movie.Poster = posterBase64
+	}
+
+	if err := config.DB.Save(&movie).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	movie.ID, _ = strconv.Atoi(id)
-	config.DB.Save(&movie)
 	c.JSON(http.StatusOK, movie)
 }
 
