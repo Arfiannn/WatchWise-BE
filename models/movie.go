@@ -1,12 +1,12 @@
 package models
 
 type Movie struct {
-	ID        int     `gorm:"column:id_movies;primaryKey" json:"id"`
-	Title     string  `json:"title"`
-	Genre     string  `json:"genre"`
-	Year      int     `json:"year"`
-	Rating    float32 `json:"rating"`
-	Synopsis  string  `json:"synopsis"`
-	Poster    string  `json:"poster"`
-	ViewCount int     `json:"view_count"`
+	ID        int     `gorm:"column:id_movies;primaryKey;autoIncrement" json:"id_movies"`
+	Title     string  `gorm:"column:title" json:"title"`
+	Genre     string  `gorm:"column:genre" json:"genre"`
+	Year      int     `gorm:"column:year" json:"year"`
+	Rating    float32 `gorm:"column:rating" json:"rating"`
+	Synopsis  string  `gorm:"column:synopsis" json:"synopsis"`
+	Poster    string  `gorm:"column:poster" json:"poster"`
+	ViewCount int     `gorm:"column:view_count" json:"view_count"`
 }
