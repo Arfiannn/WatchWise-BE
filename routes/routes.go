@@ -31,6 +31,7 @@ func SetupRouter() *gin.Engine {
 	// Reviews
 	r.GET("/movies/:id/reviews", controllers.GetReviewsByMovie)
 	r.POST("/movies/:id/reviews", controllers.CreateReview)
+	r.GET("/reviews", controllers.GetAllReviews)
 
 	// Stats
 	r.GET("/stats", controllers.GetStats)

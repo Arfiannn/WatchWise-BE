@@ -27,3 +27,12 @@ func CreateReview(c *gin.Context) {
 	config.DB.Create(&review)
 	c.JSON(http.StatusCreated, review)
 }
+
+func GetAllReviews(c *gin.Context) {
+	var reviews []models.Review
+	if err := config.DB.Find(&reviews).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch reviews"})
+		return
+	}
+	c.JSON(http.StatusOK, reviews)
+}
