@@ -8,5 +8,6 @@ type Movie struct {
 	Rating    float32 `gorm:"column:rating" json:"rating"`
 	Synopsis  string  `gorm:"column:synopsis" json:"synopsis"`
 	Poster    string  `gorm:"column:poster" json:"poster"`
+	Trailer   string  `gorm:"column:trailer" json:"trailer"`
 	ViewCount int     `gorm:"column:view_count" json:"view_count"`
 }

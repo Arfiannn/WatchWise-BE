@@ -32,6 +32,7 @@ func CreateMovie(c *gin.Context) {
 	genre := c.PostForm("genre")
 	year, _ := strconv.Atoi(c.PostForm("year"))
 	rating, _ := strconv.ParseFloat(c.PostForm("rating"), 32)
+	trailer := c.PostForm("trailer")
 	synopsis := c.PostForm("synopsis")
 
 	file, err := c.FormFile("poster")
@@ -53,6 +54,7 @@ func CreateMovie(c *gin.Context) {
 		Rating:    float32(rating),
 		Synopsis:  synopsis,
 		Poster:    posterBase64,
+		Trailer:   trailer,
 		ViewCount: 0,
 	}
 
@@ -88,6 +90,10 @@ func UpdateMovie(c *gin.Context) {
 	}
 	if synopsis := c.PostForm("synopsis"); synopsis != "" {
 		movie.Synopsis = synopsis
+	}
+
+	if trailer := c.PostForm("trailer"); trailer != "" {
+		movie.Trailer = trailer
 	}
 
 	if file, err := c.FormFile("poster"); err == nil {
