@@ -1,12 +1,13 @@
 package controllers
 
 import (
+	"encoding/base64"
+	"io"
 	"net/http"
 	"strconv"
 	"watchwise_be/config"
 	"watchwise_be/models"
-	"io"
-	"encoding/base64"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -39,7 +40,6 @@ func CreateMovie(c *gin.Context) {
 		return
 	}
 
-	
 	opened, _ := file.Open()
 	defer opened.Close()
 	fileBytes, _ := io.ReadAll(opened)
@@ -72,7 +72,6 @@ func UpdateMovie(c *gin.Context) {
 		return
 	}
 
-	
 	if title := c.PostForm("title"); title != "" {
 		movie.Title = title
 	}
@@ -90,7 +89,6 @@ func UpdateMovie(c *gin.Context) {
 	if synopsis := c.PostForm("synopsis"); synopsis != "" {
 		movie.Synopsis = synopsis
 	}
-
 
 	if file, err := c.FormFile("poster"); err == nil {
 		opened, _ := file.Open()
@@ -112,4 +110,23 @@ func DeleteMovie(c *gin.Context) {
 	id := c.Param("id")
 	config.DB.Delete(&models.Movie{}, "id_movies = ?", id)
 	c.Status(http.StatusNoContent)
+}
+
+func View(c *gin.Context) {
+	id := c.Param("id")
+
+	var movie models.Movie
+	if err := config.DB.First(&movie, "id_movies = ?", id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Movie not found"})
+		return
+	}
+
+	movie.ViewCount += 1
+
+	if err := config.DB.Save(&movie).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update view count"})
+		return
+	}
+
+	c.JSON(http.StatusOK, movie)
 }

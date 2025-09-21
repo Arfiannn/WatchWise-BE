@@ -25,6 +25,7 @@ func SetupRouter() *gin.Engine {
 	r.GET("/movies/:id", controllers.GetMovie)
 	r.POST("/movies", controllers.CreateMovie)
 	r.PUT("/movies/:id", controllers.UpdateMovie)
+	r.PUT("/movies/:id/view", controllers.View)
 	r.DELETE("/movies/:id", controllers.DeleteMovie)
 
 	// Reviews
